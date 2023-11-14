@@ -43,8 +43,12 @@ task(`cross-chain-mint`, `Mints the new NFT by sending the Cross-Chain Message`)
 
         spinner.stop();
         console.log(`✅ Mint request sent, transaction hash: ${tx.hash}`);
-
-        await getCcipMessageId(tx, receipt, sourceProvider);
+        
+        if(receipt != null) {
+            await getCcipMessageId(tx, receipt, sourceProvider);    
+        } else {
+            console.log(`❌ Receipt is null`);
+        }
 
         console.log(`✅ Task cross-chain-mint finished with the execution`);
     })

@@ -1,13 +1,13 @@
-import { ContractTransactionReceipt, ContractTransaction, ethers } from "ethers";
+import { ContractTransactionReceipt, ContractTransactionResponse, ethers } from "ethers";
 
-export const getCcipMessageId = async (tx: ContractTransaction, receipt: ContractTransactionReceipt, provider: ethers.JsonRpcProvider) => {
+export const getCcipMessageId = async (tx: ContractTransactionResponse, receipt: ContractTransactionReceipt, provider: ethers.JsonRpcProvider) => {
     // Simulate a call to the router to fetch the messageID
     const call = {
         from: tx.from,
         to: tx.to,
         data: tx.data,
         gasLimit: tx.gasLimit,
-        gasPrice: tx.gasPrice,
+        gasPrice: receipt.gasPrice,
         value: tx.value,
         blockTag: receipt.blockNumber - 1
     };

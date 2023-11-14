@@ -4,7 +4,7 @@ import { task } from "hardhat/config";
 import { HardhatRuntimeEnvironment, TaskArguments } from "hardhat/types";
 import { getPrivateKey, getProviderRpcUrl, getRouterConfig } from "./utils";
 import { Wallet, ethers } from "ethers";
-import { DestinationMinter, MyNFT } from "../typechain-types";
+import { DestinationMinter, MyNFT, MyNFT__factory } from "../typechain-types";
 import { Spinner } from "../utils/spinner";
 
 task(`deploy-destination-minter`, `Deploys MyNFT.sol and DestinationMinter.sol smart contracts`)
