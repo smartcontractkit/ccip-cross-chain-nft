@@ -3,5 +3,3 @@
 /* eslint-disable */
 import type * as interfaces from "./interfaces";
 export type { interfaces };
-import type * as shared from "./shared";
-export type { shared };

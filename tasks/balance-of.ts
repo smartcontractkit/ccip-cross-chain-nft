@@ -1,7 +1,7 @@
 import { task } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 import { getProviderRpcUrl } from "./utils";
-import { providers } from "ethers";
+import { ethers } from "ethers";
 import { MyNFT, MyNFT__factory } from "../typechain-types";
 import { Spinner } from "../utils/spinner";
 
@@ -11,7 +11,7 @@ task('balance-of', 'Gets the balance of MyNFTs for provided address')
     .addParam(`owner`, `The address to check the balance of MyNFTs`)
     .setAction(async (taskArguments: TaskArguments) => {
         const rpcProviderUrl = getProviderRpcUrl(taskArguments.blockchain);
-        const provider = new providers.JsonRpcProvider(rpcProviderUrl);
+        const provider = new ethers.JsonRpcProvider(rpcProviderUrl);
 
         const spinner: Spinner = new Spinner();
 
@@ -23,5 +23,5 @@ task('balance-of', 'Gets the balance of MyNFTs for provided address')
         const balanceOf = await myNft.balanceOf(taskArguments.owner);
 
         spinner.stop();
-        console.log(`ℹ️  The balance of MyNFTs of the ${taskArguments.owner} account is ${balanceOf.toNumber()}`);
+        console.log(`ℹ️  The balance of MyNFTs of the ${taskArguments.owner} account is ${BigInt(balanceOf)}`);
     })
