@@ -1,7 +1,7 @@
 import { task } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 import { getPrivateKey, getProviderRpcUrl, getPayFeesIn } from "./utils";
-import { Wallet, providers } from "ethers";
+import { Wallet, ethers } from "ethers";
 import { IERC20, IERC20__factory } from "../typechain-types";
 import { LINK_ADDRESSES, PayFeesIn } from "./constants";
 import { Spinner } from "../utils/spinner";
@@ -18,7 +18,7 @@ task(`fill-sender`, `Transfers the provided amount of LINK token or native coin 
         const privateKey = getPrivateKey();
         const rpcProviderUrl = getProviderRpcUrl(blockchain);
 
-        const provider = new providers.JsonRpcProvider(rpcProviderUrl);
+        const provider = new ethers.JsonRpcProvider(rpcProviderUrl);
         const wallet = new Wallet(privateKey);
         const signer = wallet.connect(provider);
 
@@ -38,7 +38,7 @@ task(`fill-sender`, `Transfers the provided amount of LINK token or native coin 
         } else {
             const link: IERC20 = IERC20__factory.connect(LINK_ADDRESSES[blockchain], signer);
 
-            console.log(`ℹ️  Attempting to send ${amount} of ${link.address} tokens from ${signer.address} to ${senderAddress}`);
+            console.log(`ℹ️  Attempting to send ${amount} of ${link.target} tokens from ${signer.address} to ${senderAddress}`);
             spinner.start();
 
             const tx = await link.transfer(senderAddress, amount);

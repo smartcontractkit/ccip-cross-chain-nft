@@ -2,7 +2,7 @@
 import { task } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 import { getPayFeesIn, getPrivateKey, getProviderRpcUrl, getRouterConfig } from "./utils";
-import { Wallet, providers } from "ethers";
+import { Wallet, ethers } from "ethers";
 import { SourceMinter, SourceMinter__factory } from "../typechain-types";
 import { Spinner } from "../utils/spinner";
 import { getCcipMessageId } from "./helpers";
@@ -19,7 +19,7 @@ task(`cross-chain-mint`, `Mints the new NFT by sending the Cross-Chain Message`)
         const privateKey = getPrivateKey();
         const sourceRpcProviderUrl = getProviderRpcUrl(sourceBlockchain);
 
-        const sourceProvider = new providers.JsonRpcProvider(sourceRpcProviderUrl);
+        const sourceProvider = new ethers.JsonRpcProvider(sourceRpcProviderUrl);
         const wallet = new Wallet(privateKey);
         const signer = wallet.connect(sourceProvider);
 
