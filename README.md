@@ -120,7 +120,7 @@ npx env-enc view
 
 ### Deployment
 
-1. Deploy the [`MyNFT.sol`](./contracts/cross-chain-nft-minter/MyNFT.sol) and [`DestinationMinter.sol`](./contracts/cross-chain-nft-minter/DestinationMinter.sol) smart contracts to the **destination blockchain**, by running the `deploy-destination-minter` task:
+1. Deploy the [`MyNFT.sol`](./contracts//MyNFT.sol) and [`DestinationMinter.sol`](./contracts./contracts/DestinationMinter.sol) smart contracts to the **destination blockchain**, by running the `deploy-destination-minter` task:
 
 ```shell
 npx hardhat deploy-destination-minter
@@ -133,7 +133,7 @@ For example, if you want to mint NFTs on avalancheFuji, run:
 npx hardhat deploy-destination-minter --network avalancheFuji
 ```
 
-2. Deploy the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) smart contract to the **source blockchain**, by running the `deploy-source-minter` task:
+2. Deploy the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract to the **source blockchain**, by running the `deploy-source-minter` task:
 
 ```shell
 npx hardhat deploy-source-minter
@@ -149,11 +149,11 @@ npx hardhat deploy-source-minter --network ethereumSepolia
 
 ### Fee Management
 
-3. Fund the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) smart contract with tokens for CCIP fees.
+3. Fund the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract with tokens for CCIP fees.
 
 - If you want to pay for CCIP fees in Native tokens:
 
-  Open Metamask and fund your contract with Native tokens. For example, if you want to mint from Ethereum Sepolia to Avalanche Fuji, you can send 0.01 Sepolia ETH to the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) smart contract.
+  Open Metamask and fund your contract with Native tokens. For example, if you want to mint from Ethereum Sepolia to Avalanche Fuji, you can send 0.01 Sepolia ETH to the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract.
 
   Or, you can execute the `fill-sender` task, by running:
 
@@ -173,7 +173,7 @@ npx hardhat fill-sender --sender-address <SOURCE_MINTER_ADDRESS> --blockchain et
 
 - If you want to pay for CCIP fees in LINK tokens:
 
-  Open Metamask and fund your contract with LINK tokens. For example, if you want to mint from Ethereum Sepolia to Avalanche Fuji, you can send 0.001 Sepolia LINK to the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) smart contract.
+  Open Metamask and fund your contract with LINK tokens. For example, if you want to mint from Ethereum Sepolia to Avalanche Fuji, you can send 0.001 Sepolia LINK to the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract.
 
   Or, you can execute the `fill-sender` task, by running:
 
@@ -193,7 +193,7 @@ npx hardhat fill-sender --sender-address <SOURCE_MINTER_ADDRESS> --blockchain et
 
 ### Minting
 
-4. Mint NFTs by calling the `mint()` function of the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) smart contract on the **source blockchain**. It will send the CCIP Cross-Chain Message with the ABI-encoded mint function signature from the [`MyNFT.sol`](./contracts/cross-chain-nft-minter/MyNFT.sol) smart contract. The [`DestinationMinter.sol`](./contracts/cross-chain-nft-minter/DestinationMinter.sol) smart contracts will receive the CCIP Cross-Chain Message with the ABI-encoded mint function signature as a payload and call the [`MyNFT.sol`](./contracts/cross-chain-nft-minter/MyNFT.sol) smart contract using it. The [`MyNFT.sol`](./contracts/cross-chain-nft-minter/MyNFT.sol) smart contract will then mint the new NFT to the `msg.sender` account from the `mint()` function of the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) smart contract, a.k.a to the account from which you will call the following command:
+4. Mint NFTs by calling the `mint()` function of the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract on the **source blockchain**. It will send the CCIP Cross-Chain Message with the ABI-encoded mint function signature from the [`MyNFT.sol`](./contracts//MyNFT.sol) smart contract. The [`DestinationMinter.sol`](./contracts./contracts/DestinationMinter.sol) smart contracts will receive the CCIP Cross-Chain Message with the ABI-encoded mint function signature as a payload and call the [`MyNFT.sol`](./contracts//MyNFT.sol) smart contract using it. The [`MyNFT.sol`](./contracts//MyNFT.sol) smart contract will then mint the new NFT to the `msg.sender` account from the `mint()` function of the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract, a.k.a to the account from which you will call the following command:
 
 ```shell
 npx hardhat cross-chain-mint
@@ -231,7 +231,7 @@ Of course, you can see your newly minted NFT on popular NFT Marketplaces, like O
 
 ![opensea](./img/opensea.png)
 
-6. You can always withdraw tokens for Chainlink CCIP fees from the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) smart contract using the `withdraw` task. Note that the `--token-address` flag is optional. If not provided, native coins will be withdrawn.
+6. You can always withdraw tokens for Chainlink CCIP fees from the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract using the `withdraw` task. Note that the `--token-address` flag is optional. If not provided, native coins will be withdrawn.
 
 ```shell
 npx hardhat withdraw
@@ -253,4 +253,4 @@ or
 npx hardhat withdraw --beneficiary <BENEFICIARY_ADDRESS> --blockchain ethereumSepolia --from <SOURCE_MINTER_ADDRESS> --token-address 0x779877A7B0D9E8603169DdbD7836e478b4624789
 ```
 
-depending on whether you filled the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) contract with `Native` or `LINK` in step number 3.
+depending on whether you filled the [`SourceMinter.sol`](./contracts/SourceMinter.sol) contract with `Native` or `LINK` in step number 3.
