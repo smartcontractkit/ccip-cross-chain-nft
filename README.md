@@ -185,7 +185,7 @@ npx hardhat fill-sender
 --pay-fees-in <LINK>
 ```
 
-For example, if you want to fund it with 0.001 Sepolia LINK, run:
+For example, if you want to fund it with 0.2 Sepolia LINK, run:
 
 ```shell
 npx hardhat fill-sender --sender-address <SOURCE_MINTER_ADDRESS> --blockchain ethereumSepolia --amount 200000000000000000 --pay-fees-in LINK
