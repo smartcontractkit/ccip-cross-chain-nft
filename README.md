@@ -173,7 +173,7 @@ npx hardhat fill-sender --sender-address <SOURCE_MINTER_ADDRESS> --blockchain et
 
 - If you want to pay for CCIP fees in LINK tokens:
 
-  Open Metamask and fund your contract with LINK tokens. For example, if you want to mint from Ethereum Sepolia to Avalanche Fuji, you can send 0.001 Sepolia LINK to the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) smart contract.
+  Open Metamask and fund your contract with LINK tokens. For example, if you want to mint from Ethereum Sepolia to Avalanche Fuji, you can send 0.2 Sepolia LINK to the [`SourceMinter.sol`](./contracts/cross-chain-nft-minter/SourceMinter.sol) smart contract.
 
   Or, you can execute the `fill-sender` task, by running:
 
@@ -188,7 +188,7 @@ npx hardhat fill-sender
 For example, if you want to fund it with 0.001 Sepolia LINK, run:
 
 ```shell
-npx hardhat fill-sender --sender-address <SOURCE_MINTER_ADDRESS> --blockchain ethereumSepolia --amount 1000000000000000 --pay-fees-in LINK
+npx hardhat fill-sender --sender-address <SOURCE_MINTER_ADDRESS> --blockchain ethereumSepolia --amount 200000000000000000 --pay-fees-in LINK
 ```
 
 ### Minting
