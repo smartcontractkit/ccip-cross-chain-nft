@@ -7,11 +7,11 @@ export const getProviderRpcUrl = (network: string) => {
         case "ethereumSepolia":
             rpcUrl = process.env.ETHEREUM_SEPOLIA_RPC_URL;
             break;
-        case "optimismGoerli":
-            rpcUrl = process.env.OPTIMISM_GOERLI_RPC_URL;
+        case "optimismSepolia":
+            rpcUrl = process.env.OPTIMISM_SEPOLIA_RPC_URL;
             break;
-        case "arbitrumTestnet":
-            rpcUrl = process.env.ARBITRUM_TESTNET_RPC_URL;
+        case "arbitrumSepolia":
+            rpcUrl = process.env.ARBITRUM_SEPOLIA_RPC_URL;
             break;
         case "avalancheFuji":
             rpcUrl = process.env.AVALANCHE_FUJI_RPC_URL;
@@ -47,10 +47,10 @@ export const getRouterConfig = (network: string) => {
     switch (network) {
         case "ethereumSepolia":
             return routerConfig.ethereumSepolia;
-        case "optimismGoerli":
-            return routerConfig.optimismGoerli;
-        case "arbitrumTestnet":
-            return routerConfig.arbitrumTestnet;
+        case "optimismSepolia":
+            return routerConfig.optimismSepolia;
+        case "arbitrumSepolia":
+            return routerConfig.arbitrumSepolia;
         case "avalancheFuji":
             return routerConfig.avalancheFuji;
         case "polygonMumbai":
