@@ -120,7 +120,7 @@ npx env-enc view
 
 ### Deployment
 
-1. Deploy the [`MyNFT.sol`](./contracts//MyNFT.sol) and [`DestinationMinter.sol`](./contracts./contracts/DestinationMinter.sol) smart contracts to the **destination blockchain**, by running the `deploy-destination-minter` task:
+1. Deploy the [`MyNFT.sol`](./contracts/MyNFT.sol) and [`DestinationMinter.sol`](./contracts/DestinationMinter.sol) smart contracts to the **destination blockchain**, by running the `deploy-destination-minter` task:
 
 ```shell
 npx hardhat deploy-destination-minter
@@ -193,7 +193,7 @@ npx hardhat fill-sender --sender-address <SOURCE_MINTER_ADDRESS> --blockchain et
 
 ### Minting
 
-4. Mint NFTs by calling the `mint()` function of the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract on the **source blockchain**. It will send the CCIP Cross-Chain Message with the ABI-encoded mint function signature from the [`MyNFT.sol`](./contracts//MyNFT.sol) smart contract. The [`DestinationMinter.sol`](./contracts./contracts/DestinationMinter.sol) smart contracts will receive the CCIP Cross-Chain Message with the ABI-encoded mint function signature as a payload and call the [`MyNFT.sol`](./contracts//MyNFT.sol) smart contract using it. The [`MyNFT.sol`](./contracts//MyNFT.sol) smart contract will then mint the new NFT to the `msg.sender` account from the `mint()` function of the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract, a.k.a to the account from which you will call the following command:
+4. Mint NFTs by calling the `mint()` function of the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract on the **source blockchain**. It will send the CCIP Cross-Chain Message with the ABI-encoded mint function signature from the [`MyNFT.sol`](./contracts/MyNFT.sol) smart contract. The [`DestinationMinter.sol`](./contracts/DestinationMinter.sol) smart contracts will receive the CCIP Cross-Chain Message with the ABI-encoded mint function signature as a payload and call the [`MyNFT.sol`](./contracts/MyNFT.sol) smart contract using it. The [`MyNFT.sol`](./contracts/MyNFT.sol) smart contract will then mint the new NFT to the `msg.sender` account from the `mint()` function of the [`SourceMinter.sol`](./contracts/SourceMinter.sol) smart contract, a.k.a to the account from which you will call the following command:
 
 ```shell
 npx hardhat cross-chain-mint
