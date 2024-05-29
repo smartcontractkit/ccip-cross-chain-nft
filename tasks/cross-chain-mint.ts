@@ -10,7 +10,7 @@ import { getCcipMessageId } from "./helpers";
 task(`cross-chain-mint`, `Mints the new NFT by sending the Cross-Chain Message`)
     .addParam(`sourceBlockchain`, `The name of the source blockchain (for example ethereumSepolia)`)
     .addParam(`sourceMinter`, `The address of the SourceMinter.sol smart contract on the source blockchain`)
-    .addParam(`destinationBlockchain`, `The name of the destination blockchain (for example polygonMumbai)`)
+    .addParam(`destinationBlockchain`, `The name of the destination blockchain (for example polygonAmoy)`)
     .addParam(`destinationMinter`, `The address of the DestinationMinter.sol smart contract on the destination blockchain`)
     .addParam(`payFeesIn`, `Choose between 'Native' and 'LINK'`)
     .setAction(async (taskArguments: TaskArguments) => {
@@ -43,9 +43,9 @@ task(`cross-chain-mint`, `Mints the new NFT by sending the Cross-Chain Message`)
 
         spinner.stop();
         console.log(`✅ Mint request sent, transaction hash: ${tx.hash}`);
-        
-        if(receipt != null) {
-            await getCcipMessageId(tx, receipt, sourceProvider);    
+
+        if (receipt != null) {
+            await getCcipMessageId(tx, receipt, sourceProvider);
         } else {
             console.log(`❌ Receipt is null`);
         }

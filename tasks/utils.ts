@@ -7,6 +7,9 @@ export const getProviderRpcUrl = (network: string) => {
         case "ethereumSepolia":
             rpcUrl = process.env.ETHEREUM_SEPOLIA_RPC_URL;
             break;
+        case "polygonAmoy":
+            rpcUrl = process.env.POLYGON_AMOY_RPC_URL;
+            break;
         case "optimismSepolia":
             rpcUrl = process.env.OPTIMISM_SEPOLIA_RPC_URL;
             break;
@@ -16,8 +19,23 @@ export const getProviderRpcUrl = (network: string) => {
         case "avalancheFuji":
             rpcUrl = process.env.AVALANCHE_FUJI_RPC_URL;
             break;
-        case "polygonMumbai":
-            rpcUrl = process.env.POLYGON_MUMBAI_RPC_URL;
+        case "bnbChainTestnet":
+            rpcUrl = process.env.BNB_CHAIN_TESTNET_RPC_URL;
+            break;
+        case "baseSepolia":
+            rpcUrl = process.env.BASE_SEPOLIA_RPC_URL;
+            break;
+        case "kromaSepolia":
+            rpcUrl = process.env.KROMA_SEPOLIA_RPC_URL;
+            break;
+        case "wemixTestnet":
+            rpcUrl = process.env.WEMIX_TESTNET_RPC_URL;
+            break;
+        case "gnosisChiado":
+            rpcUrl = process.env.GNOSIS_CHIADO_RPC_URL;
+            break;
+        case "celoAlfajores":
+            rpcUrl = process.env.CELO_ALFAJORES_RPC_URL;
             break;
         default:
             throw new Error("Unknown network: " + network);
@@ -47,14 +65,26 @@ export const getRouterConfig = (network: string) => {
     switch (network) {
         case "ethereumSepolia":
             return routerConfig.ethereumSepolia;
+        case "polygonAmoy":
+            return routerConfig.polygonAmoy;
         case "optimismSepolia":
             return routerConfig.optimismSepolia;
         case "arbitrumSepolia":
             return routerConfig.arbitrumSepolia;
         case "avalancheFuji":
             return routerConfig.avalancheFuji;
-        case "polygonMumbai":
-            return routerConfig.polygonMumbai;
+        case "bnbChainTestnet":
+            return routerConfig.bnbChainTestnet;
+        case "baseSepolia":
+            return routerConfig.baseSepolia;
+        case "kromaSepolia":
+            return routerConfig.kromaSepolia;
+        case "wemixTestnet":
+            return routerConfig.wemixTestnet;
+        case "gnosisChiado":
+            return routerConfig.gnosisChiado;
+        case "celoAlfajores":
+            return routerConfig.celoAlfajores;
         default:
             throw new Error("Unknown network: " + network);
     }
