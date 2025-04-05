@@ -13,12 +13,8 @@ import {IAny2EVMMessageReceiver} from "@chainlink/contracts-ccip/src/v0.8/ccip/i
 import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 import {LinkTokenInterface} from "@chainlink/contracts/src/v0.8/shared/interfaces/LinkTokenInterface.sol";
 
-/**
- * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
- * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
- * DO NOT USE THIS CODE IN PRODUCTION.
- */
-contract XNFT is ERC721, ERC721URIStorage, ERC721Burnable, IAny2EVMMessageReceiver, ReentrancyGuard, OwnerIsCreator {
+
+contract CrossChainPOAP is ERC721, ERC721URIStorage, ERC721Burnable, IAny2EVMMessageReceiver, ReentrancyGuard, OwnerIsCreator {
     using SafeERC20 for IERC20;
 
     enum PayFeesIn {
@@ -35,19 +31,12 @@ contract XNFT is ERC721, ERC721URIStorage, ERC721Burnable, IAny2EVMMessageReceiv
     error SenderNotEnabled(address sender);
     error OperationNotAllowedOnCurrentChain(uint64 chainSelector);
 
-    struct XNftDetails {
-        address xNftAddress;
+    struct POAPDetails {
+        address poapAddress;
         bytes ccipExtraArgsBytes;
     }
 
     uint256 constant ARBITRUM_SEPOLIA_CHAIN_ID = 421614;
-
-    string[] characters = [
-        "https://ipfs.io/ipfs/QmTgqnhFBMkfT9s8PHKcdXBn1f5bG3Q5hmBaR4U6hoTvb1?filename=Chainlink_Elf.png",
-        "https://ipfs.io/ipfs/QmZGQA92ri1jfzSu61JRaNQXYg1bLuM7p8YT83DzFA2KLH?filename=Chainlink_Knight.png",
-        "https://ipfs.io/ipfs/QmW1toapYs7M29rzLXTENn3pbvwe8ioikX1PwzACzjfdHP?filename=Chainlink_Orc.png",
-        "https://ipfs.io/ipfs/QmPMwQtFpEdKrUjpQJfoTeZS1aVSeuJT6Mof7uV29AcUpF?filename=Chainlink_Witch.png"
-    ];
 
     IRouterClient internal immutable i_ccipRouter;
     LinkTokenInterface internal immutable i_linkToken;
@@ -55,10 +44,11 @@ contract XNFT is ERC721, ERC721URIStorage, ERC721Burnable, IAny2EVMMessageReceiv
 
     uint256 private _nextTokenId;
 
-    mapping(uint64 destChainSelector => XNftDetails xNftDetailsPerChain) public s_chains;
+    mapping(uint64 => POAPDetails) public s_chains;
 
-    event ChainEnabled(uint64 chainSelector, address xNftAddress, bytes ccipExtraArgs);
+    event ChainEnabled(uint64 chainSelector, address poapAddress, bytes ccipExtraArgs);
     event ChainDisabled(uint64 chainSelector);
+    // tokenId in CrossChainSent is 0 because it will be generated on the destination chain.
     event CrossChainSent(
         address from, address to, uint256 tokenId, uint64 sourceChainSelector, uint64 destinationChainSelector
     );
@@ -73,22 +63,16 @@ contract XNFT is ERC721, ERC721URIStorage, ERC721Burnable, IAny2EVMMessageReceiv
         _;
     }
 
-    modifier onlyOnArbitrumSepolia() {
-        if (block.chainid != ARBITRUM_SEPOLIA_CHAIN_ID) {
-            revert OnlyOnArbitrumSepolia();
-        }
-        _;
-    }
 
     modifier onlyEnabledChain(uint64 _chainSelector) {
-        if (s_chains[_chainSelector].xNftAddress == address(0)) {
+        if (s_chains[_chainSelector].poapAddress == address(0)) {
             revert ChainNotEnabled(_chainSelector);
         }
         _;
     }
 
     modifier onlyEnabledSender(uint64 _chainSelector, address _sender) {
-        if (s_chains[_chainSelector].xNftAddress != _sender) {
+        if (s_chains[_chainSelector].poapAddress != _sender) {
             revert SenderNotEnabled(_sender);
         }
         _;
@@ -102,7 +86,7 @@ contract XNFT is ERC721, ERC721URIStorage, ERC721Burnable, IAny2EVMMessageReceiv
     }
 
     constructor(address ccipRouterAddress, address linkTokenAddress, uint64 currentChainSelector)
-        ERC721("Cross Chain NFT", "XNFT")
+        ERC721("CrossChain POAP", "POAP")
     {
         if (ccipRouterAddress == address(0)) revert InvalidRouter(address(0));
         i_ccipRouter = IRouterClient(ccipRouterAddress);
@@ -110,76 +94,75 @@ contract XNFT is ERC721, ERC721URIStorage, ERC721Burnable, IAny2EVMMessageReceiv
         i_currentChainSelector = currentChainSelector;
     }
 
-    function mint() external onlyOnArbitrumSepolia {
+    // Updated mint function: takes a token URI as input.
+    function mint(string memory tokenUri) external {
         uint256 tokenId = _nextTokenId++;
-        string memory uri = characters[tokenId % characters.length];
         _safeMint(msg.sender, tokenId);
-        _setTokenURI(tokenId, uri);
+        _setTokenURI(tokenId, tokenUri);
     }
 
-    function enableChain(uint64 chainSelector, address xNftAddress, bytes memory ccipExtraArgs)
+    function enableChain(uint64 chainSelector, address poapAddress, bytes memory ccipExtraArgs)
         external
         onlyOwner
         onlyOtherChains(chainSelector)
     {
-        s_chains[chainSelector] = XNftDetails({xNftAddress: xNftAddress, ccipExtraArgsBytes: ccipExtraArgs});
-
-        emit ChainEnabled(chainSelector, xNftAddress, ccipExtraArgs);
+        s_chains[chainSelector] = POAPDetails({poapAddress: poapAddress, ccipExtraArgsBytes: ccipExtraArgs});
+        emit ChainEnabled(chainSelector, poapAddress, ccipExtraArgs);
     }
 
     function disableChain(uint64 chainSelector) external onlyOwner onlyOtherChains(chainSelector) {
         delete s_chains[chainSelector];
-
         emit ChainDisabled(chainSelector);
     }
 
-    function crossChainTransferFrom(
-        address from,
+    /**
+     * @notice Initiates a cross-chain mint request. A new POAP NFT will be minted on the destination chain.
+     * @param to The recipient address on the destination chain.
+     * @param tokenUri The URI for the POAP metadata.
+     * @param destinationChainSelector The target chain selector.
+     * @param payFeesIn The token in which fees are paid (Native or LINK).
+     * @return messageId The ID of the CCIP message sent.
+     */
+    function crossChainMint(
         address to,
-        uint256 tokenId,
+        string memory tokenUri,
         uint64 destinationChainSelector,
         PayFeesIn payFeesIn
     ) external nonReentrant onlyEnabledChain(destinationChainSelector) returns (bytes32 messageId) {
-        string memory tokenUri = tokenURI(tokenId);
-        _burn(tokenId);
-
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
-            receiver: abi.encode(s_chains[destinationChainSelector].xNftAddress),
-            data: abi.encode(from, to, tokenId, tokenUri),
+            receiver: abi.encode(s_chains[destinationChainSelector].poapAddress),
+            data: abi.encode(msg.sender, to, tokenUri),
             tokenAmounts: new Client.EVMTokenAmount[](0),
             extraArgs: s_chains[destinationChainSelector].ccipExtraArgsBytes,
             feeToken: payFeesIn == PayFeesIn.LINK ? address(i_linkToken) : address(0)
         });
 
-        // Get the fee required to send the CCIP message
         uint256 fees = i_ccipRouter.getFee(destinationChainSelector, message);
 
         if (payFeesIn == PayFeesIn.LINK) {
             if (fees > i_linkToken.balanceOf(address(this))) {
                 revert NotEnoughBalanceForFees(i_linkToken.balanceOf(address(this)), fees);
             }
-
-            // Approve the Router to transfer LINK tokens on contract's behalf. It will spend the fees in LINK
             i_linkToken.approve(address(i_ccipRouter), fees);
-
-            // Send the message through the router and store the returned message ID
             messageId = i_ccipRouter.ccipSend(destinationChainSelector, message);
         } else {
             if (fees > address(this).balance) {
                 revert NotEnoughBalanceForFees(address(this).balance, fees);
             }
-
-            // Send the message through the router and store the returned message ID
             messageId = i_ccipRouter.ccipSend{value: fees}(destinationChainSelector, message);
         }
 
-        emit CrossChainSent(from, to, tokenId, i_currentChainSelector, destinationChainSelector);
+        emit CrossChainSent(msg.sender, to, 0, i_currentChainSelector, destinationChainSelector);
+        return messageId;
     }
 
-    /// @inheritdoc IAny2EVMMessageReceiver
+    /**
+     * @notice Called by the CCIP router to deliver messages.
+     * Decodes the message and mints a new POAP on the destination chain.
+     * @param message The CCIP message containing minting details.
+     */
     function ccipReceive(Client.Any2EVMMessage calldata message)
         external
-        virtual
         override
         onlyRouter
         nonReentrant
@@ -187,9 +170,11 @@ contract XNFT is ERC721, ERC721URIStorage, ERC721Burnable, IAny2EVMMessageReceiv
         onlyEnabledSender(message.sourceChainSelector, abi.decode(message.sender, (address)))
     {
         uint64 sourceChainSelector = message.sourceChainSelector;
-        (address from, address to, uint256 tokenId, string memory tokenUri) =
-            abi.decode(message.data, (address, address, uint256, string));
+        // Decode the message data: sender, recipient, and token URI.
+        (address from, address to, string memory tokenUri) = abi.decode(message.data, (address, address, string));
 
+        // Generate a new tokenId for the minted POAP NFT.
+        uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, tokenUri);
 
@@ -198,19 +183,14 @@ contract XNFT is ERC721, ERC721URIStorage, ERC721Burnable, IAny2EVMMessageReceiv
 
     function withdraw(address _beneficiary) public onlyOwner {
         uint256 amount = address(this).balance;
-
         if (amount == 0) revert NothingToWithdraw();
-
         (bool sent,) = _beneficiary.call{value: amount}("");
-
         if (!sent) revert FailedToWithdrawEth(msg.sender, _beneficiary, amount);
     }
 
     function withdrawToken(address _beneficiary, address _token) public onlyOwner {
         uint256 amount = IERC20(_token).balanceOf(address(this));
-
         if (amount == 0) revert NothingToWithdraw();
-
         IERC20(_token).safeTransfer(_beneficiary, amount);
     }
 

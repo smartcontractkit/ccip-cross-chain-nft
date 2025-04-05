@@ -1,10 +1,36 @@
-## Burn and Mint Cross-Chain NFT
+# 🪪 ZenPass – Cross-Chain POAP Minting System
 
-> **Note**
->
-> Previous version of this repo (cross-chain NFT minting) has been moved to the [cross-chain-nft-minter-example branch](https://github.com/smartcontractkit/ccip-cross-chain-nft/tree/cross-chain-nft-minter-example).
+## 🔗 Contract Deployments
 
-A cross-chain NFT is a smart contract that can exist on any blockchain, abstracting away the need for users to understand which blockchain they’re using.
+### Base Sepolia
+- **ZenPass POAP Contract**  
+  [`0x48f6bf86809e0aC9E57F6c63FBB4fC31fdb903d3`](https://sepolia.basescan.org/address/0x48f6bf86809e0aC9E57F6c63FBB4fC31fdb903d3)  
+  This is the source contract where the `crossChainMint()` function is invoked. The request is processed and forwarded cross-chain.
+
+### Polygon Amoy
+- **ZenPass POAP Contract**  
+  [`0x245C4d85558bFB54E9F27C99b55DaAC2a6eaDb42`](https://amoy.polygonscan.com/address/0x245C4d85558bFB54E9F27C99b55DaAC2a6eaDb42#events)  
+  This contract receives the cross-chain mint request and mints the POAP to the user's address.
+
+![image](https://github.com/user-attachments/assets/dd1c62d6-1893-41ad-80ee-13267af0592f)
+
+
+## 🌉 Cross-Chain Minting Flow
+
+- The `crossChainMint()` function is called on **Base Sepolia**, initiating a message via **Chainlink CCIP**.
+- The request is routed to **Polygon Amoy**, where the POAP is minted upon message receipt.
+
+## 🧠 Powered by Nodit
+
+- **Nodit Web3 Data APIs**  
+  - Used to fetch all **minted ZenPass POAPs** for a given wallet address, ensuring real-time updates for user profiles.
+
+- **Nodit Multichain Webhook Listener**  
+  - Subscribed to the `CrossChainReceived` event.
+  - Once triggered, Nodit sends a **push notification** confirming successful POAP minting on the destination chain.
+
+---
+
 
 ## Prerequisites
 
@@ -24,11 +50,32 @@ forge install
 forge build
 ```
 
-3. Create a new file by copying the `.env.example` file, and name it `.env`. Fill in with Ethereum Sepolia and Arbitrum Sepolia RPC URLs using either local archive nodes or a service that provides archival data, like [Infura](https://infura.io/) or [Alchemy](https://alchemy.com/).
-
+3. Create a new file by copying the `.env.example` file, and name it `.env`. Fill in the required fields
 ```
-ETHEREUM_SEPOLIA_RPC_URL=""
-ARBITRUM_SEPOLIA_RPC_URL=""
+# Polygon Amoy RPC URL
+POLYGON_AMOY_RPC_URL="https://polygon-amoy-bor-rpc.publicnode.com"
+
+# Base Sepolia RPC URL
+BASE_SEPOLIA_RPC_URL="https://base-sepolia-rpc.publicnode.com"
+
+# Base Sepolia configuration
+BASE_CCIP_ROUTER=""
+BASE_LINK_TOKEN=""
+BASE_CHAIN_SELECTOR=""
+
+# Polygon Amoy configuration
+POLYGON_CCIP_ROUTER=""
+POLYGON_LINK_TOKEN=""
+POLYGON_CHAIN_SELECTOR=""
+
+PRIVATE_KEY=""
+
+# Gas limit
+GAS_LIMIT="200000"
+
+# Etherscan API keys
+BASE_SEPOLIA_KEY=""
+POLYGON_AMOY_KEY=""
 ```
 
 4. Run tests
@@ -37,24 +84,13 @@ ARBITRUM_SEPOLIA_RPC_URL=""
 forge test
 ```
 
-## How Do Cross-Chain NFTs Work?
+5. Deploy Mulichain Contracts with verified instances
 
-At a high level, an NFT is a digital token on a blockchain with a unique identifier different from any other token on the chain.
+```
+forge script script/DeployCrossChainPoap.s.sol:DeployMultiChainCrossChainPOAP --slow --multi --broadcast --private-key <> --verify -- --env-file .env
+```
+![image](https://github.com/user-attachments/assets/92d992f0-876a-4767-b7dd-97aa88605c8c)
 
-Any NFT is implemented by a smart contract that is intrinsically connected to a single blockchain. The smart contract is arguably the most important part of this equation because it controls the NFT implementation: How many are minted, when, what conditions need to be met to distribute them, and more. This means that any cross-chain NFT implementation requires at least two smart contracts on two blockchains and interconnection between them.
+![image](https://github.com/user-attachments/assets/7aacff49-e351-442f-8c46-27f34b800c42)
 
-This is what a cross-chain NFT looks like - equivalent NFTs that exist across multiple blockchains.
 
-With this in mind, cross-chain NFTs can be implemented in three ways:
-
-- **Burn-and-mint**: An NFT owner puts their NFT into a smart contract on the source chain and burns it, in effect removing it from that blockchain. Once this is done, an equivalent NFT is created on the destination blockchain from its corresponding smart contract. This process can occur in both directions.
-
-- **Lock-and-mint**: An NFT owner locks their NFT into a smart contract on the source chain, and an equivalent NFT is created on the destination blockchain. When the owner wants to move their NFT back, they burn the NFT and it unlocks the NFT on the original blockchain.
-
-- **Lock and unlock**: The same NFT collection is minted on multiple blockchains. An NFT owner can lock their NFT on a source blockchain to unlock the equivalent NFT on a destination blockchain. This means only a single NFT can actively be used at any point in time, even if there are multiple instances of that NFT across blockchains.
-
-![Cross-Chain NFT Mechanisms](./img/cross-chain-nft-mechanisms.jpeg)
-
-> **Note**
->
-> _This repository represents an example of using a Chainlink product or service. It is provided to help you understand how to interact with Chainlink’s systems so that you can integrate them into your own. This template is provided "AS IS" without warranties of any kind, has not been audited, and may be missing key checks or error handling to make the usage of the product more clear. Take everything in this repository as an example and not something to be copy pasted into a production ready service._

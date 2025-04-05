@@ -3,7 +3,7 @@ src = "src"
 out = "out"
 test = "test"
 libs = ["lib"]
-solc = '0.8.24'
+solc = '0.8.20'
 
 remappings = [
     '@chainlink/contracts-ccip=lib/ccip/contracts',
@@ -24,5 +24,11 @@ kromaSepolia = "${KROMA_SEPOLIA_RPC_URL}"
 wemixTestnet = "${WEMIX_TESTNET_RPC_URL}"
 gnosisChiado = "${GNOSIS_CHIADO_RPC_URL}"
 celoAlfajores = "${CELO_ALFAJORES_RPC_URL}"
+
+
+[etherscan]
+base-sepolia = { key = "${BASE_SEPOLIA_KEY}" }
+polygon-amoy = { key = "${POLYGON_AMOY_KEY}" }
+
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
